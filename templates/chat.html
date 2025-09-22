@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini Chatbot</title>
+  
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div id="chatbox">
+    <h2>💬 Fix-It Chatbot</h2>
+    <div id="messages"></div>
+    <div id="input-area">
+      <input type="text" id="message" placeholder="Type your question..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("message");
+      const text = input.value.trim();
+      if (!text) return;
+
+      // Show user message
+      const msgDiv = document.getElementById("messages");
+      msgDiv.innerHTML += `<div class="message user"><b>You:</b> ${text}</div>`;
+      input.value = "";
+
+      // Send to Flask backend
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+
+      // Show bot reply
+      msgDiv.innerHTML += `<div class="message bot"><b>Bot:</b> ${data.reply}</div>`;
+      msgDiv.scrollTop = msgDiv.scrollHeight;
+      
+    }
+  </script>
+
+  
+
+</body>
+</html>

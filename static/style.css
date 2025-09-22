@@ -1,0 +1,592 @@
+/* 
+.review-container {
+    overflow: hidden;
+    white-space: nowrap;
+    background: #f8f9fa;
+    padding: 15px 0;
+    margin-top: 30px;
+    border-radius: 10px;
+}
+.review-box {
+    display: inline-block;
+    min-width: 260px;
+    margin: 0 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    vertical-align: middle;
+}
+.scrolling {
+    display: inline-block;
+    animation: scroll-left 20s linear infinite;
+}
+@keyframes scroll-left {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(-100%); }
+}
+.review-container:hover .scrolling {
+    animation-play-state: paused;
+}
+
+.stars { 
+    color: gold; font-size: 18px; 
+}
+
+
+.btn-purple {
+    background-color: #6f42c1;
+    color: white;
+}
+.btn-purple:hover,
+.btn-purple:focus,
+.btn-purple:active {
+    background-color: #5a32a3; 
+    color: white;
+    border: none;
+    box-shadow: none;
+} */
+/* ------------------------------------ */
+/* --- 1. CSS VARIABLES & BASE STYLES --- */
+/* ------------------------------------ */
+:root {
+    /* Primary Metals */
+    --color-primary: #1A3C68; /* Navy Blue (Trust & Governance) */
+    --color-secondary: #2E7D32; /* Emerald Green (Civic Engagement) */
+    --color-accent: #F9A825; /* Golden Yellow (Highlights) */
+    
+    /* Background & Neutrals */
+    --color-background-body: #F4F6F8; /* Light Gray */
+    --color-card-bg: #FFFFFF; /* White for Cards & Panels */
+    --color-text: #333333; /* Dark Gray for readability */
+    --color-border: #d1d5db;
+    
+    /* Status & Action Colors */
+    --color-resolved: #388E3C; /* Resolved (Green) */
+    --color-pending: #FB8C00; /* Pending (Orange) */
+    --color-in-progress: #1976D2; /* In Progress (Blue) */
+    --color-critical: #D32F2F; /* Critical (Red) */
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --border-radius: 0.5rem;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-background-body);
+    line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* Add Inter font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- Background Bubble Animation --- */
+/* You MUST add <ul class="bubbles">...</ul> to the body of your HTML files for this to show */
+.bubbles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.bubbles li {
+    position: absolute;
+    display: block;
+    list-style: none;
+    width: 20px;
+    height: 20px;
+    background: rgba(26, 60, 104, 0.1); /* Semi-transparent Navy Blue */
+    animation: animate 25s linear infinite;
+    bottom: -150px;
+}
+
+.bubbles li:nth-child(1) {
+    left: 25%;
+    width: 80px;
+    height: 80px;
+    animation-delay: 0s;
+}
+.bubbles li:nth-child(2) {
+    left: 10%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 2s;
+    animation-duration: 12s;
+}
+.bubbles li:nth-child(3) {
+    left: 70%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 4s;
+}
+.bubbles li:nth-child(4) {
+    left: 40%;
+    width: 60px;
+    height: 60px;
+    animation-delay: 0s;
+    animation-duration: 18s;
+}
+.bubbles li:nth-child(5) {
+    left: 65%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 0s;
+}
+.bubbles li:nth-child(6) {
+    left: 75%;
+    width: 110px;
+    height: 110px;
+    animation-delay: 3s;
+}
+.bubbles li:nth-child(7) {
+    left: 35%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 7s;
+}
+.bubbles li:nth-child(8) {
+    left: 50%;
+    width: 25px;
+    height: 25px;
+    animation-delay: 15s;
+    animation-duration: 45s;
+}
+.bubbles li:nth-child(9) {
+    left: 20%;
+    width: 15px;
+    height: 15px;
+    animation-delay: 2s;
+    animation-duration: 35s;
+}
+.bubbles li:nth-child(10) {
+    left: 85%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 0s;
+    animation-duration: 11s;
+}
+@keyframes animate {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        border-radius: 0;
+    }
+    100% {
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+        border-radius: 50%;
+    }
+}
+/* ------------------------------------ */
+/* --- 2. GLOBAL COMPONENTS & LAYOUT --- */
+/* ------------------------------------ */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    position: relative;
+    z-index: 1;
+}
+
+.card {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    max-width: 600px;
+    margin: 2rem auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px -2px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.06);
+}
+
+/* Updated form control styling with a modern feel */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+    padding: 0.75rem 1rem;
+    background-color: var(--color-card-bg);
+    transition: all 0.2s ease-in-out;
+    color: var(--color-text); /* Ensure text is readable */
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-secondary);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.4);
+    background-color: var(--color-card-bg);
+}
+
+/* Text area with bubble-like feel */
+textarea.form-control {
+    background: linear-gradient(145deg, var(--color-card-bg) 0%, #E8E8E8 100%);
+    border: none;
+    border-left: 3px solid var(--color-secondary);
+    border-radius: var(--border-radius);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+}
+
+textarea.form-control:focus {
+    border-color: var(--color-secondary);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), 0 0 0 3px rgba(46, 125, 50, 0.4);
+}
+
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+    box-shadow: var(--shadow-sm);
+    color: white; /* Ensure button text is white for dark backgrounds */
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background-color: #122a4d;
+    border-color: #122a4d;
+}
+
+.btn-success {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+    color: white;
+}
+.btn-success:hover {
+    background-color: #266b2a;
+    border-color: #266b2a;
+}
+
+.btn-danger {
+    background-color: var(--color-critical);
+    border-color: var(--color-critical);
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #a81c1c;
+    border-color: #a81c1c;
+}
+
+.btn-info {
+    background-color: var(--color-in-progress);
+    border-color: var(--color-in-progress);
+    color: white;
+}
+.btn-info:hover {
+    background-color: #1066c0;
+    border-color: #1066c0;
+}
+
+.btn-purple {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text);
+}
+.btn-purple:hover {
+    background-color: #e59c1c;
+    border-color: #e59c1c;
+}
+
+.alert-success {
+    background-color: #D4EDDA;
+    color: #155724;
+    border-color: #C3E6CB;
+}
+
+.alert-danger {
+    background-color: #F8D7DA;
+    color: #721C24;
+    border-color: #F5C6CB;
+}
+
+.alert-info {
+    background-color: #D1ECF1;
+    color: #0C5460;
+    border-color: #BEE5EB;
+}
+
+/* ------------------------------------ */
+/* --- 3. PAGE-SPECIFIC STYLES --- */
+/* ------------------------------------ */
+
+/* --- Header & Footer --- */
+header {
+    background: var(--color-primary);
+    color: var(--color-card-bg);
+    padding: 2rem 0;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+}
+header h1, header p {
+    color: var(--color-card-bg);
+}
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+header p {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+footer {
+    background: var(--color-primary);
+    color: var(--color-card-bg);
+    padding: 1rem 0;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* Reviews section */
+.review-container {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+    background-color: var(--color-card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.scrolling {
+    display: flex;
+    white-space: nowrap;
+    animation: scroll-left 40s linear infinite;
+}
+.scrolling:hover {
+    animation-play-state: paused; /* Pause animation on hover */
+}
+
+.review-box {
+    flex-shrink: 0;
+    width: 300px;
+    padding: 1.5rem;
+    margin-right: 2rem;
+    background-color: var(--color-card-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+    display: inline-block;
+}
+
+.stars {
+    color: var(--color-accent);
+}
+
+@keyframes scroll-left {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+}
+
+/* Chatbot Trigger */
+#triggerImage {
+    display: block;
+    margin: 2rem auto;
+    cursor: pointer;
+    width: 150px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#triggerImage:hover {
+    transform: scale(1.05);
+}
+
+
+/* --- Report an Issue (report_issue.html) --- */
+#map {
+    height: 400px;
+    width: 100%;
+    margin: 1rem auto;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+#locateBtn {
+    margin-top: 1rem;
+}
+
+/* --- Dashboard (dashboard.html & admin_dashboard.html) --- */
+.table {
+    border-radius: var(--border-radius);
+    overflow: hidden; /* Ensures rounded corners on the table */
+}
+
+.table thead th {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 600;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #F8F8F8; /* A slightly darker off-white for striping */
+}
+
+.table-responsive {
+    box-shadow: var(--shadow-md);
+    border-radius: var(--border-radius);
+}
+
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-card-bg);
+    padding: 1rem;
+}
+
+/* --- Admin Login (admin_login.html) --- */
+.vh-100 {
+    min-height: 100vh;
+}
+.card.shadow-lg {
+    box-shadow: var(--shadow-md);
+}
+
+/* --- Image Modal --- */
+.modal-content {
+    border-radius: var(--border-radius);
+    background-color: var(--color-card-bg);
+}
+.modal-body {
+    padding: 2rem;
+}
+#modalImage {
+    max-height: 80vh;
+    object-fit: contain;
+}
+
+/* --- Leaderboard --- */
+.table.table-bordered {
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
+}
+
+/* --- Chatbot Styles (from index.html script) --- */
+#chatbox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    background-color: var(--color-card-bg);
+    overflow: hidden;
+    z-index: 1000;
+}
+#chatbox h2 {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 1rem;
+    margin: 0;
+    font-size: 1.2rem;
+    text-align: center;
+}
+#messages {
+    flex-grow: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.message {
+    padding: 0.75rem;
+    border-radius: var(--border-radius);
+    max-width: 80%;
+    word-wrap: break-word;
+}
+.message.user {
+    background-color: var(--color-card-bg);
+    align-self: flex-end;
+}
+.message.bot {
+    background-color: var(--color-background-body);
+    align-self: flex-start;
+}
+#input-area {
+    display: flex;
+    padding: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+#message {
+    flex-grow: 1;
+    border-radius: var(--border-radius) 0 0 var(--border-radius);
+    border: 1px solid var(--color-border);
+    padding: 0.5rem;
+}
+#input-area button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    cursor: pointer;
+}
+.chatbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#closeChatbox {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+}
+
+#closeChatbox:hover {
+  color: red;
+}
+
+/* --- Media Queries for Responsiveness --- */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    .text-center.mb-3 a.btn {
+        display: block;
+        margin: 0.5rem 0;
+    }
+    .d-flex.justify-content-end.gap-2 {
+        flex-direction: column;
+    }
+    .list-group-item small {
+        display: block;
+        margin-top: 0.25rem;
+    }
+    #chatbox {
+        width: 90%;
+        right: 5%;
+        bottom: 10px;
+    }
+}

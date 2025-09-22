@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Civic Issue Reporting System</title>
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+
+  <style>
+    /* Loading Screen */
+    #loader {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background:#2980b9;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:2000;
+    }
+    .spinner-border { width: 3rem; height: 3rem; }
+
+    /* Animated Gradient Background */
+    body {
+      min-height: 100vh;
+      background: linear-gradient(-45deg, #6dd5fa, #2980b9, #6c5ce7, #00cec9);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+      overflow-x: hidden;
+    }
+    @keyframes gradientBG {
+      0% {background-position:0% 50%;}
+      50% {background-position:100% 50%;}
+      100% {background-position:0% 50%;}
+    }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
+    }
+    .navbar-nav .nav-link {
+      position: relative;
+      color: #fff !important;
+      margin-right: 15px;
+      transition: color 0.3s;
+    }
+    .navbar-nav .nav-link::after {
+      content: "";
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      bottom: -3px;
+      left: 0;
+      background: #fff;
+      transition: width 0.3s;
+    }
+    .navbar-nav .nav-link:hover::after {
+      width: 100%;
+    }
+    .profile-pic {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fff;
+    }
+
+    /* Shiny Feature Cards */
+    .feature-card {
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.4s, box-shadow 0.4s;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 0 25px rgba(255,255,255,0.6);
+    }
+    .feature-card::after {
+      content:"";
+      position:absolute;
+      top:0; left:-75%;
+      width:50%; height:100%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+      transform:skewX(-25deg);
+    }
+    .feature-card:hover::after { animation: shine 1s; }
+    @keyframes shine { 100% {left:125%;} }
+    .feature-card i { font-size: 2.5rem; margin-bottom: 15px; }
+
+    /* Reviews carousel */
+    .review-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: auto;
+      animation: fadeInUp 1s;
+    }
+    .stars { color: gold; }
+
+    /* Floating Chatbot Button */
+    #chat-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(45deg,#ff4757,#ff6b81);
+      border: none;
+      border-radius: 50%;
+      width: 65px; height: 65px;
+      font-size: 24px;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 999;
+      transition: transform 0.3s;
+    }
+    #chat-toggle:hover { transform: scale(1.1) rotate(10deg); }
+
+    /* Chatbox */
+    #chatbox {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 320px;
+      max-height: 400px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+      animation: zoomIn 0.4s;
+    }
+    #chatbox header {
+      background: #2980b9;
+      color: #fff;
+      padding: 10px;
+      font-weight: bold;
+    }
+    #messages { flex: 1; overflow-y: auto; padding: 10px; font-size: 14px; color: #333; }
+    .message.user { text-align: right; margin-bottom: 8px; }
+    .message.bot { text-align: left; margin-bottom: 8px; }
+    #input-area { display: flex; border-top: 1px solid #ddd; }
+    #input-area input { flex: 1; border: none; padding: 10px; font-size: 14px; }
+    #input-area button { border: none; padding: 10px 15px; background: #2980b9; color: #fff; }
+
+    footer {
+      margin-top: 50px;
+      padding: 20px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="spinner-border text-light" role="status"></div>
+  </div>
+
+  <!-- Navbar -->
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top animate_animated animate_fadeInDown">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#">Fix-It-Now</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Push everything to the right -->
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+        <!-- Links moved here -->
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('map_view') }}">View Map</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
+
+        <!-- Profile with dropdown -->
+        <li class="nav-item dropdown ms-3">
+          <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown">
+            <img src="../static/download.jpeg" alt="profile" class="profile-pic me-2">
+            <span>User</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{{ url_for('login') }}">Login</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('register') }}">Register</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('admin_login') }}">Admin Login</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- Hero -->
+  <section class="text-center my-5 animate_animated animate_fadeInUp">
+    <h1 class="display-5 fw-bold">Civic Issue Reporting System</h1>
+    <p class="lead">Report issues in your city and help the municipality respond faster.</p>
+  </section>
+
+  <!-- Features -->
+  <div class="container animate_animated animatefadeInUp animate_delay-1s">
+    <div class="row g-4">
+      <div class="col-md-3">
+        <a href="{{ url_for('login') }}" class="text-decoration-none">
+          <div class="feature-card"><i class="fa-solid fa-user"></i><h5>User Login</h5></div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{{ url_for('register') }}" class="text-decoration-none">
+          <div class="feature-card"><i class="fa-solid fa-user-plus"></i><h5>Register</h5></div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{{ url_for('admin_login') }}" class="text-decoration-none">
+          <div class="feature-card"><i class="fa-solid fa-lock"></i><h5>Admin Login</h5></div>
+        </a>
+      </div>
+      <div class="col-md-3">
+        <a href="{{ url_for('map_view') }}" class="text-decoration-none">
+          <div class="feature-card"><i class="fa-solid fa-map-location-dot"></i><h5>View Map</h5></div>
+        </a>
+      </div>
+      <div class="col-md-12 mt-4">
+        <a href="{{ url_for('leaderboard') }}" class="text-decoration-none">
+          <div class="feature-card text-center"><i class="fa-solid fa-trophy"></i><h5>Leaderboard</h5></div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <section class="my-5 animate_animated animatefadeInUp animate_delay-2s">
+    <div id="reviewsCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        {% if feedbacks %}
+          {% for f in feedbacks %}
+            <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+              <div class="review-box">
+                <h6 style="color:#333;"">{{ f.username }}</h6>
+                <div class="stars">
+                  {% for i in range(f.rating) %}&#9733;{% endfor %}
+                  {% for i in range(5 - f.rating) %}&#9734;{% endfor %}
+                </div>
+                <p style="color:#333;">{{ f.comment }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="carousel-item active">
+            <div class="review-box"><h6>No reviews yet</h6><p>Be the first to leave feedback!</p></div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <button id="chat-toggle"><i class="fa-solid fa-comments"></i></button>
+  <div id="chatbox">
+    <header>💬 Fix-It Chatbot</header>
+    <div id="messages"></div>
+    <div id="input-area">
+      <input type="text" id="message" placeholder="Type your question..."/>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center animate_animated animatefadeInUp animate_delay-3s">
+    <small>©️ Civic System</small>
+  </footer>
+
+  <script>
+    // Loader hide after page load
+    window.addEventListener("load", () => {
+      document.getElementById("loader").style.display = "none";
+    });
+
+    // Chat toggle
+    const chatToggle = document.getElementById("chat-toggle");
+    const chatbox = document.getElementById("chatbox");
+    chatToggle.addEventListener("click", () => {
+      chatbox.style.display = chatbox.style.display === "flex" ? "none" : "flex";
+    });
+
+    async function sendMessage() {
+      const input = document.getElementById("message");
+      const text = input.value.trim();
+      if (!text) return;
+      const msgDiv = document.getElementById("messages");
+      // msgDiv.innerHTML += <div class="message user"><b>You:</b> ${text}</div>;
+      msgDiv.innerHTML += `<div class="message user"><b>You:</b> ${text}</div>`;
+      input.value = "";
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await res.json();
+      // msgDiv.innerHTML += <div class="message bot"><b>Bot:</b> ${data.reply}</div>;
+      msgDiv.innerHTML += `<div class="message bot"><b>Bot:</b> ${data.reply}</div>`;
+      msgDiv.scrollTop = msgDiv.scrollHeight;
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

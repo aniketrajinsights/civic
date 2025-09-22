@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- DataTables -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+  <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  body {
+  background: linear-gradient(135deg, #cce0ff, #e6f0ff);
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Navbar */
+.navbar {
+  background: rgba(0, 51, 153, 0.8) !important;
+  backdrop-filter: blur(10px);
+}
+.navbar-brand {
+  font-family: 'Poppins', sans-serif;
+  color: #fff !important;
+  font-weight: bold;
+  font-size: 1.4rem;
+  letter-spacing: 1px;
+}
+.nav-link, .dropdown-item {
+  transition: 0.3s;
+}
+.nav-link:hover, .dropdown-item:hover {
+  color: #ffd700 !important;
+  transform: scale(1.05);
+}
+
+/* Buttons */
+.btn-primary { background-color: #007bff; border-color: #007bff; }
+.btn-primary:hover { background-color: #0056b3; border-color: #0056b3; }
+.btn-success { background-color: #28a745; border-color: #28a745; }
+.btn-success:hover { background-color: #1e7e34; border-color: #1e7e34; }
+
+/* Cards */
+.card {
+  border-radius: 15px;
+  
+  background-color: rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+  max-width: 1200px;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Table */
+table.dataTable tbody tr:hover {
+  background: rgba(0, 123, 255, 0.1);
+  transform: scale(1.01);
+}
+thead.table-dark {
+  background-color: #007bff !important;
+  color: #fff;
+}
+
+/* Avatar */
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+
+/* Background video */
+.video-background {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+.video-background video {
+  min-width: 100%; min-height: 100%;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+</style>
+</head>
+<body class="container py-4">
+   <div class="video-background">
+    <video autoplay muted loop>
+      <source src="../static/643dee5b-cbd1-4962-8c85-11da31806bf4.mp4.mp4" type="video/mp4">
+    </video>
+  </div>
+  <!-- <header>
+  
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-white text-center">Admin Dashboard</h3>
+     
+
+    <div class="d-flex justify-content-end gap-2 mb-3">
+  <a href="/map" class="btn btn-success">View Map</a>
+  <a href="/logout" class="btn btn-danger">Logout</a>
+</div>
+  </div></header> -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    
+    <!-- Left: Brand or Title -->
+    <a class="navbar-brand mx-auto text-center" href="#" style="font-size: 1.5rem;">Admin Dashboard</a>
+
+    <!-- Right: Action Buttons -->
+    <div class="d-flex gap-2">
+      <a href="/map" class="btn btn-sm btn-success">View Map</a>
+      <a href="/logout" class="btn btn-sm btn-danger">Logout</a>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- 🔍 Search + Filter Controls -->
+   <div class="card shadow-sm border-0 mb-5" data-aos="fade-up">
+    <div class="card-body row g-7">
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <input type="text" id="searchInput" class="form-control" placeholder="Search issues...">
+    </div>
+    <div class="col-md-4">
+      <select id="categoryFilter" class="form-select">
+        <option value="">-- Select a category --</option>
+        <option>Road</option>
+        <option>Garbage</option>
+        <option>Streetlight</option>
+        <option>Water</option>
+        <option>Noise</option>
+        <option>Pollution</option>
+        <option>Drainage</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select id="statusFilter" class="form-select">
+        <option value="">-- Select status --</option>
+        <option>Pending</option>
+        <option>In Progress</option>
+        <option>Resolved</option>
+      </select>
+    </div>
+  </div>
+    </div>
+   </div>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+<div class="card shadow-sm border-0 mb-5" data-aos="fade-up">
+    <div class="card-body row g-3">
+  <h4 class="mb-3">All User Reports</h4>
+  {% if reports %}
+    <table id="reportsTable" class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Problem</th>
+          <th>Category</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Action</th>
+          <th>Image</th>
+          <th>Person Rating</th>
+          <th>Similar Nearby</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in reports %}
+          <tr>
+            <td>{{ r.name }}</td>
+            <td>{{ r.title }}</td>
+            <td>{{ r.category }}</td>
+            <td>{{ r.location }}</td>
+            <td>{{ r.status }}</td>
+            
+
+            <td>
+              <!-- <form method="POST" action="{{ url_for('update_status', report_id=r.id) }}" class="d-flex"> -->
+                <form method="POST" action="{{ url_for('update_status', report_id=r.id) }}" class="d-flex"></d>
+
+                  
+                <select name="status" class="form-select form-select-sm me-2">
+                  <option value="Pending" {% if r.status=='Pending' %}selected{% endif %}>Pending</option>
+                  <option value="In Progress" {% if r.status=='In Progress' %}selected{% endif %}>In Progress</option>
+                  <option value="Resolved" {% if r.status=='Resolved' %}selected{% endif %}>Resolved</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+              </form>
+            </td>
+            <td>
+              {% if r.image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ r.image) }}" 
+                     alt="report image" width="100" class="img-thumbnail"
+                     data-bs-toggle="modal" data-bs-target="#imageModal"
+                     onclick='showImage("{{ url_for('static', filename='uploads/' ~ r.image) }}")'>
+              {% else %}
+                <span class="text-muted">No image</span>
+              {% endif %}
+            </td>
+            <td>
+  {% if r.rating %}
+    {% for i in range(r.rating) %}
+      <i class="fas fa-star text-warning"></i>
+    {% endfor %}
+  {% else %}
+    <span class="text-muted">No rating</span>
+  {% endif %}
+  <br>
+  {% if r.status == 'Resolved' %}
+    <span class="text-success">{{ r.status }}</span>
+  {% else %}
+    <span class="text-danger">Not Resolved</span>
+  {% endif %}
+</td>
+<td>{{ r.similar_count +1}} </td>
+
+
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info">No reports submitted yet.</div>
+  {% endif %}
+    </div>
+</div>
+  <hr class="my-4">
+<div class="card shadow-sm border-0 mb-5" data-aos="fade-up">
+    <div class="card-body row g-3">
+  <h4 class="mb-3">App Feedback from Users</h4>
+  {% if feedbacks %}
+    <div class="list-group">
+      {% for fb in feedbacks %}
+        <div class="list-group-item">
+          <p class="mb-1">{{ fb.comment }}</p>
+          <small><strong>{{ fb.username }}</strong> — Rating: {{ fb.rating }} ⭐ ({{ fb.created_at }})</small>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-secondary">No feedback available yet.</div>
+  {% endif %}
+    </div>
+</div>
+  <!-- Image Modal -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Report Image</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="modalImage" class="img-fluid" src="" alt="Report Image">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    $(document).ready(function() {
+      var table = $('#reportsTable').DataTable({
+        "order": [[0, "asc"]],
+        "pageLength": 5
+      });
+
+      // 🔍 Search bar
+      $('#searchInput').on('keyup', function() {
+        table.search(this.value).draw();
+      });
+
+      // 📂 Category filter (column index 2)
+      $('#categoryFilter').on('change', function() {
+        table.column(2).search(this.value).draw();
+      });
+
+      // 📌 Status filter (column index 4)
+      $('#statusFilter').on('change', function() {
+        table.column(4).search(this.value).draw();
+      });
+    });
+
+    function showImage(src) {
+      document.getElementById("modalImage").src = src;
+    }
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
